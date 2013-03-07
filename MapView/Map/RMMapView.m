@@ -3139,6 +3139,13 @@
         {
             self.showsUserLocation = YES;
 
+            if (_userLocationTrackingView || _userHeadingTrackingView || _userHaloTrackingView)
+            {
+                [_userLocationTrackingView removeFromSuperview]; _userLocationTrackingView = nil;
+                [_userHeadingTrackingView removeFromSuperview]; _userHeadingTrackingView = nil;
+                [_userHaloTrackingView removeFromSuperview]; _userHaloTrackingView = nil;
+            }
+            
             self.userLocation.layer.hidden = YES;
 
             _userHaloTrackingView = [[UIImageView alloc] initWithImage:[RMMapView resourceImageNamed:@"TrackingDotHalo.png"]];
@@ -3203,6 +3210,13 @@
         case RMUserTrackingModeFollowWithCourse:
         {
             self.showsUserLocation = YES;
+            
+            if (_userLocationTrackingView || _userHeadingTrackingView || _userHaloTrackingView)
+            {
+                [_userLocationTrackingView removeFromSuperview]; _userLocationTrackingView = nil;
+                [_userHeadingTrackingView removeFromSuperview]; _userHeadingTrackingView = nil;
+                [_userHaloTrackingView removeFromSuperview]; _userHaloTrackingView = nil;
+            }
             
             self.userLocation.layer.hidden = YES;
             
