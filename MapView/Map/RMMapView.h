@@ -343,6 +343,10 @@ typedef enum : NSUInteger {
 /** The annotation that is currently selected. */
 @property (nonatomic, strong) RMAnnotation *selectedAnnotation;
 
+/** The base color for the halo around the user location.
+ */
+@property (nonatomic, strong) UIColor *haloColor;
+
 #pragma mark - TileSources
 
 @property (nonatomic, strong) RMQuadTree *quadTree;

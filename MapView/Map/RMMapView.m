@@ -3151,17 +3151,17 @@
             
             self.userLocation.layer.hidden = YES;
 
-            _userHaloTrackingView = [[UIImageView alloc] initWithImage:[RMMapView resourceImageNamed:@"TrackingDotHalo.png"]];
-
-            _userHaloTrackingView.center = CGPointMake(round([self bounds].size.width  / 2),
-                                                       round([self bounds].size.height / 2));
-
-            _userHaloTrackingView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin  |
-                                                     UIViewAutoresizingFlexibleRightMargin |
-                                                     UIViewAutoresizingFlexibleTopMargin   |
-                                                     UIViewAutoresizingFlexibleBottomMargin;
-
-            [self insertSubview:_userHaloTrackingView belowSubview:_overlayView];
+//            _userHaloTrackingView = [[UIImageView alloc] initWithImage:[RMMapView resourceImageNamed:@"TrackingDotHalo.png"]];
+//
+//            _userHaloTrackingView.center = CGPointMake(round([self bounds].size.width  / 2),
+//                                                       round([self bounds].size.height / 2));
+//
+//            _userHaloTrackingView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin  |
+//                                                     UIViewAutoresizingFlexibleRightMargin |
+//                                                     UIViewAutoresizingFlexibleTopMargin   |
+//                                                     UIViewAutoresizingFlexibleBottomMargin;
+//
+//            [self insertSubview:_userHaloTrackingView belowSubview:_overlayView];
 
             _userHeadingTrackingView = [[UIImageView alloc] initWithImage:[RMMapView resourceImageNamed:@"HeadingAngleLarge.png"]];
 
@@ -3181,19 +3181,19 @@
 
             [self insertSubview:_userHeadingTrackingView belowSubview:_overlayView];
 
-            _userLocationTrackingView = [[UIImageView alloc] initWithImage:[UIImage imageWithCGImage:(CGImageRef)self.userLocation.layer.contents
-                                                                                               scale:self.userLocation.layer.contentsScale
-                                                                                         orientation:UIImageOrientationUp]];
-
-            _userLocationTrackingView.center = CGPointMake(round([self bounds].size.width  / 2), 
-                                                           round([self bounds].size.height / 2));
-
-            _userLocationTrackingView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin  |
-                                                         UIViewAutoresizingFlexibleRightMargin |
-                                                         UIViewAutoresizingFlexibleTopMargin   |
-                                                         UIViewAutoresizingFlexibleBottomMargin;
-            
-            [self insertSubview:_userLocationTrackingView aboveSubview:_userHeadingTrackingView];
+//            _userLocationTrackingView = [[UIImageView alloc] initWithImage:[UIImage imageWithCGImage:(CGImageRef)self.userLocation.layer.contents
+//                                                                                               scale:self.userLocation.layer.contentsScale
+//                                                                                         orientation:UIImageOrientationUp]];
+//
+//            _userLocationTrackingView.center = CGPointMake(round([self bounds].size.width  / 2), 
+//                                                           round([self bounds].size.height / 2));
+//
+//            _userLocationTrackingView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin  |
+//                                                         UIViewAutoresizingFlexibleRightMargin |
+//                                                         UIViewAutoresizingFlexibleTopMargin   |
+//                                                         UIViewAutoresizingFlexibleBottomMargin;
+//            
+//            [self insertSubview:_userLocationTrackingView aboveSubview:_userHeadingTrackingView];
 
             if (self.zoom < 3)
                 [self zoomByFactor:exp2f(3 - [self zoom]) near:self.center animated:YES];
@@ -3223,17 +3223,17 @@
             
             self.userLocation.layer.hidden = YES;
             
-            _userHaloTrackingView = [[UIImageView alloc] initWithImage:[RMMapView resourceImageNamed:@"TrackingDotHalo.png"]];
-            
-            _userHaloTrackingView.center = CGPointMake(round([self bounds].size.width  / 2),
-                                                       round([self bounds].size.height / 2));
-            
-            _userHaloTrackingView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin  |
-            UIViewAutoresizingFlexibleRightMargin |
-            UIViewAutoresizingFlexibleTopMargin   |
-            UIViewAutoresizingFlexibleBottomMargin;
-            
-            [self insertSubview:_userHaloTrackingView belowSubview:_overlayView];
+//            _userHaloTrackingView = [[UIImageView alloc] initWithImage:[RMMapView resourceImageNamed:@"TrackingDotHalo.png"]];
+//            
+//            _userHaloTrackingView.center = CGPointMake(round([self bounds].size.width  / 2),
+//                                                       round([self bounds].size.height / 2));
+//            
+//            _userHaloTrackingView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin  |
+//            UIViewAutoresizingFlexibleRightMargin |
+//            UIViewAutoresizingFlexibleTopMargin   |
+//            UIViewAutoresizingFlexibleBottomMargin;
+//            
+//            [self insertSubview:_userHaloTrackingView belowSubview:_overlayView];
             
             _userHeadingTrackingView = [[UIImageView alloc] initWithImage:[RMMapView resourceImageNamed:@"HeadingAngleSmall.png"]];
             
@@ -3384,10 +3384,14 @@
         _accuracyCircleAnnotation.layer = [[RMCircle alloc] initWithView:self radiusInMeters:newLocation.horizontalAccuracy];
         _accuracyCircleAnnotation.layer.zPosition = -MAXFLOAT;
         _accuracyCircleAnnotation.isUserLocationAnnotation = YES;
-
-        ((RMCircle *)_accuracyCircleAnnotation.layer).lineColor = [UIColor colorWithRed:0.378 green:0.552 blue:0.827 alpha:0.7];
-        ((RMCircle *)_accuracyCircleAnnotation.layer).fillColor = [UIColor colorWithRed:0.378 green:0.552 blue:0.827 alpha:0.15];
-
+        if (!self.haloColor) {
+            ((RMCircle *)_accuracyCircleAnnotation.layer).lineColor = [UIColor colorWithRed:0.378 green:0.552 blue:0.827 alpha:0.7];
+            ((RMCircle *)_accuracyCircleAnnotation.layer).fillColor = [UIColor colorWithRed:0.378 green:0.552 blue:0.827 alpha:0.15];
+        }
+        else {
+            ((RMCircle *)_accuracyCircleAnnotation.layer).lineColor = [self.haloColor colorWithAlphaComponent:0.7f];
+            ((RMCircle *)_accuracyCircleAnnotation.layer).fillColor = [self.haloColor colorWithAlphaComponent:0.15f];
+        }
         ((RMCircle *)_accuracyCircleAnnotation.layer).lineWidthInPixels = 2.0;
 
         [self addAnnotation:_accuracyCircleAnnotation];
@@ -3423,47 +3427,47 @@
     if (newLocation.horizontalAccuracy != oldLocation.horizontalAccuracy)
         ((RMCircle *)_accuracyCircleAnnotation.layer).radiusInMeters = newLocation.horizontalAccuracy;
 
-    if ( ! _trackingHaloAnnotation)
-    {
-        _trackingHaloAnnotation = [RMAnnotation annotationWithMapView:self coordinate:newLocation.coordinate andTitle:nil];
-        _trackingHaloAnnotation.annotationType = kRMTrackingHaloAnnotationTypeName;
-        _trackingHaloAnnotation.clusteringEnabled = NO;
-        _trackingHaloAnnotation.enabled = NO;
-
-        // create image marker
-        //
-        _trackingHaloAnnotation.layer = [[RMMarker alloc] initWithUIImage:[RMMapView resourceImageNamed:@"TrackingDotHalo.png"]];
-        _trackingHaloAnnotation.layer.zPosition = -MAXFLOAT + 1;
-        _trackingHaloAnnotation.isUserLocationAnnotation = YES;
-
-        [CATransaction begin];
-        [CATransaction setAnimationDuration:2.5];
-        [CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
-
-        // scale out radially
-        //
-        CABasicAnimation *boundsAnimation = [CABasicAnimation animationWithKeyPath:@"transform"];
-        boundsAnimation.repeatCount = MAXFLOAT;
-        boundsAnimation.fromValue = [NSValue valueWithCATransform3D:CATransform3DMakeScale(0.1, 0.1, 1.0)];
-        boundsAnimation.toValue   = [NSValue valueWithCATransform3D:CATransform3DMakeScale(2.0, 2.0, 1.0)];
-        boundsAnimation.removedOnCompletion = NO;
-
-        [_trackingHaloAnnotation.layer addAnimation:boundsAnimation forKey:@"animateScale"];
-
-        // go transparent as scaled out
-        //
-        CABasicAnimation *opacityAnimation = [CABasicAnimation animationWithKeyPath:@"opacity"];
-        opacityAnimation.repeatCount = MAXFLOAT;
-        opacityAnimation.fromValue = [NSNumber numberWithFloat:1.0];
-        opacityAnimation.toValue   = [NSNumber numberWithFloat:-1.0];
-        opacityAnimation.removedOnCompletion = NO;
-
-        [_trackingHaloAnnotation.layer addAnimation:opacityAnimation forKey:@"animateOpacity"];
-
-        [CATransaction commit];
-
-        [self addAnnotation:_trackingHaloAnnotation];
-    }
+//    if ( ! _trackingHaloAnnotation)
+//    {
+//        _trackingHaloAnnotation = [RMAnnotation annotationWithMapView:self coordinate:newLocation.coordinate andTitle:nil];
+//        _trackingHaloAnnotation.annotationType = kRMTrackingHaloAnnotationTypeName;
+//        _trackingHaloAnnotation.clusteringEnabled = NO;
+//        _trackingHaloAnnotation.enabled = NO;
+//
+//        // create image marker
+//        //
+//        _trackingHaloAnnotation.layer = [[RMMarker alloc] initWithUIImage:[RMMapView resourceImageNamed:@"TrackingDotHalo.png"]];
+//        _trackingHaloAnnotation.layer.zPosition = -MAXFLOAT + 1;
+//        _trackingHaloAnnotation.isUserLocationAnnotation = YES;
+//
+//        [CATransaction begin];
+//        [CATransaction setAnimationDuration:2.5];
+//        [CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
+//
+//        // scale out radially
+//        //
+//        CABasicAnimation *boundsAnimation = [CABasicAnimation animationWithKeyPath:@"transform"];
+//        boundsAnimation.repeatCount = MAXFLOAT;
+//        boundsAnimation.fromValue = [NSValue valueWithCATransform3D:CATransform3DMakeScale(0.1, 0.1, 1.0)];
+//        boundsAnimation.toValue   = [NSValue valueWithCATransform3D:CATransform3DMakeScale(2.0, 2.0, 1.0)];
+//        boundsAnimation.removedOnCompletion = NO;
+//
+//        [_trackingHaloAnnotation.layer addAnimation:boundsAnimation forKey:@"animateScale"];
+//
+//        // go transparent as scaled out
+//        //
+//        CABasicAnimation *opacityAnimation = [CABasicAnimation animationWithKeyPath:@"opacity"];
+//        opacityAnimation.repeatCount = MAXFLOAT;
+//        opacityAnimation.fromValue = [NSNumber numberWithFloat:1.0];
+//        opacityAnimation.toValue   = [NSNumber numberWithFloat:-1.0];
+//        opacityAnimation.removedOnCompletion = NO;
+//
+//        [_trackingHaloAnnotation.layer addAnimation:opacityAnimation forKey:@"animateOpacity"];
+//
+//        [CATransaction commit];
+//
+//        [self addAnnotation:_trackingHaloAnnotation];
+//    }
 
     if ([newLocation distanceFromLocation:oldLocation])
         _trackingHaloAnnotation.coordinate = newLocation.coordinate;
