@@ -39,6 +39,9 @@
 
     // Width of the line, in pixels
     float lineWidth;
+    // Width of the border line, in pixels
+    float lineBorderWidth;
+    float totalLineBorderWidth;
 
     // Line dash style
     __weak NSArray *lineDashLengths;
@@ -63,6 +66,10 @@
 /** The line color of the shape. Defaults to black. */
 @property (nonatomic, strong) UIColor *lineColor;
 
+/** The line color of the shape. Defaults to black. */
+@property (nonatomic, strong) UIColor *lineBorderColor;
+
+
 /** The fill color of the shape. Defaults to clear. */
 @property (nonatomic, strong) UIColor *fillColor;
 
@@ -75,6 +82,7 @@
 
 /** The line width of the shape. Defaults to 2.0. */
 @property (nonatomic, assign) float lineWidth;
+@property (nonatomic, assign) float lineBorderWidth;
 
 @property (nonatomic, assign) BOOL scaleLineWidth;
 @property (nonatomic, assign) CGFloat shadowBlur;
