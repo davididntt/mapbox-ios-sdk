@@ -69,8 +69,9 @@
         if (super.layer)
             self.hasCustomLayer = YES;
 
+        UIImage *testimage = [RMMapView resourceImageNamed:@"headingArrow.png"];
         if ( ! super.layer)
-            super.layer = [[RMMarker alloc] initWithUIImage:[RMMapView resourceImageNamed:@"TrackingDot.png"]];
+            super.layer = [[RMMarker alloc] initWithUIImage:testimage];
 
         super.layer.zPosition = -MAXFLOAT + 2;
     }
@@ -90,6 +91,12 @@
         [self willChangeValueForKey:@"location"];
         _location = newLocation;
         self.coordinate = _location.coordinate;
+        CGFloat angle = (M_PI / -180) * newLocation.course;
+        
+        //CGAffineTransform _mapTransform = CGAffineTransformMakeRotation(angle);
+        CATransform3D transform = CATransform3DMakeAffineTransform(CGAffineTransformMakeRotation(-angle));
+        self.layer.transform   = transform;
+        
         [self didChangeValueForKey:@"location"];
     }
 }

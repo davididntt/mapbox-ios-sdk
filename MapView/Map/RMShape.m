@@ -40,6 +40,7 @@
     CGRect previousBounds;
 
     CAShapeLayer *shapeLayer;
+    CAShapeLayer *shapeBorderLayer;
     UIBezierPath *bezierPath;
 
     NSMutableArray *points;
@@ -55,6 +56,7 @@
 @synthesize enableShadow;
 @synthesize pathBoundingBox;
 
+#define kDefaultLineBorderWidth 0.0
 #define kDefaultLineWidth 2.0
 
 - (id)initWithView:(RMMapView *)aMapView
@@ -66,6 +68,7 @@
 
     bezierPath = [UIBezierPath new];
     lineWidth = kDefaultLineWidth;
+    totalLineBorderWidth = kDefaultLineWidth + kDefaultLineBorderWidth*2;
     ignorePathUpdates = NO;
 
     shapeLayer = [CAShapeLayer new];
@@ -78,8 +81,22 @@
     shapeLayer.shadowRadius = 0.0;
     shapeLayer.shadowOpacity = 0.0;
     shapeLayer.shadowOffset = CGSizeMake(0, 0);
+    shapeLayer.zPosition = 10;
     [self addSublayer:shapeLayer];
 
+    shapeBorderLayer = [CAShapeLayer new];
+    shapeBorderLayer.rasterizationScale = [[UIScreen mainScreen] scale];
+    shapeBorderLayer.lineWidth = totalLineBorderWidth;
+    shapeBorderLayer.lineCap = kCALineCapButt;
+    shapeBorderLayer.lineJoin = kCALineJoinMiter;
+    shapeBorderLayer.strokeColor = [UIColor blackColor].CGColor;
+    shapeBorderLayer.fillColor = [UIColor clearColor].CGColor;
+    shapeBorderLayer.shadowRadius = 0.0;
+    shapeBorderLayer.shadowOpacity = 0.0;
+    shapeBorderLayer.shadowOffset = CGSizeMake(0, 0);
+    shapeBorderLayer.zPosition = 0;
+    [self addSublayer:shapeBorderLayer];
+    
     pathBoundingBox = CGRectZero;
     nonClippedBounds = CGRectZero;
     previousBounds = CGRectZero;
@@ -115,16 +132,27 @@
     // we have to calculate the scaledLineWidth even if scalling did not change
     // as the lineWidth might have changed
     float scaledLineWidth;
+    float scaledLineBorderWidth;
 
     if (scaleLineWidth)
+    {
         scaledLineWidth = lineWidth * scale;
+        scaledLineBorderWidth = totalLineBorderWidth * scale;
+    }
     else
+    {
         scaledLineWidth = lineWidth;
+        scaledLineBorderWidth = totalLineBorderWidth;
+    }
 
     shapeLayer.lineWidth = scaledLineWidth;
+    shapeBorderLayer.lineWidth = scaledLineBorderWidth;
 
-    if (self.fillPatternImage)
+    if (self.fillPatternImage){
         shapeLayer.fillColor = [[UIColor colorWithPatternImage:self.fillPatternImage] CGColor];
+        shapeBorderLayer.fillColor = [[UIColor colorWithPatternImage:self.fillPatternImage] CGColor];
+    }
+    
 
     if (lineDashLengths)
     {
@@ -138,10 +166,12 @@
             }
 
             shapeLayer.lineDashPattern = scaledLineDashLengths;
+            shapeBorderLayer.lineDashPattern = scaledLineDashLengths;
         }
         else
         {
             shapeLayer.lineDashPattern = lineDashLengths;
+            shapeBorderLayer.lineDashPattern = lineDashLengths;
         }
     }
 
@@ -164,10 +194,19 @@
             animation.autoreverses = NO;
             animation.fromValue = (id) shapeLayer.path;
             animation.toValue = (id) scaledPath.CGPath;
+            
+            CABasicAnimation *animationBorder = [CABasicAnimation animationWithKeyPath:@"path"];
+            animationBorder.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+            animationBorder.repeatCount = 0;
+            animationBorder.autoreverses = NO;
+            animationBorder.fromValue = (id) shapeBorderLayer.path;
+            animationBorder.toValue = (id) scaledPath.CGPath;
             [shapeLayer addAnimation:animation forKey:@"animatePath"];
+            [shapeBorderLayer addAnimation:animationBorder forKey:@"animateKeyPath"];
         }
 
         shapeLayer.path = scaledPath.CGPath;
+        shapeBorderLayer.path = scaledPath.CGPath;
 
         // calculate the bounds of the scaled path
         CGRect boundsInMercators = scaledPath.bounds;
@@ -464,7 +503,20 @@
 - (void)setLineWidth:(float)newLineWidth
 {
     lineWidth = newLineWidth;
+    totalLineBorderWidth = (lineBorderWidth * 2) + lineWidth;
+    lastScale = 0.0;
+    [self recalculateGeometryAnimated:NO];
+}
 
+- (float)lineBorderWidth
+{
+    return lineBorderWidth;
+}
+
+- (void)setLineBorderWidth:(float)newLineWidth
+{
+    lineBorderWidth = newLineWidth;
+    totalLineBorderWidth = (lineBorderWidth * 2) + lineWidth;
     lastScale = 0.0;
     [self recalculateGeometryAnimated:NO];
 }
@@ -501,6 +553,20 @@
     if (shapeLayer.strokeColor != aLineColor.CGColor)
     {
         shapeLayer.strokeColor = aLineColor.CGColor;
+        [self setNeedsDisplay];
+    }
+}
+
+- (UIColor *)lineBorderColor
+{
+    return [UIColor colorWithCGColor:shapeBorderLayer.strokeColor];
+}
+
+- (void)setLineBorderColor:(UIColor *)aLineColor
+{
+    if (shapeBorderLayer.strokeColor != aLineColor.CGColor)
+    {
+        shapeBorderLayer.strokeColor = aLineColor.CGColor;
         [self setNeedsDisplay];
     }
 }
