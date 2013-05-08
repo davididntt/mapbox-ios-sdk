@@ -528,7 +528,7 @@
 
 - (void)setLineCap:(NSString *)newLineCap
 {
-    shapeLayer.lineCap = newLineCap;
+    shapeLayer.lineCap = shapeBorderLayer.lineCap = newLineCap;
     [self setNeedsDisplay];
 }
 
@@ -539,7 +539,7 @@
 
 - (void)setLineJoin:(NSString *)newLineJoin
 {
-    shapeLayer.lineJoin = newLineJoin;
+    shapeLayer.lineJoin = shapeBorderLayer.lineJoin = newLineJoin;
     [self setNeedsDisplay];
 }
 
