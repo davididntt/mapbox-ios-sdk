@@ -495,7 +495,7 @@
                     averageX /= (double)enclosedAnnotationsCount;
                     averageY /= (double)enclosedAnnotationsCount;
 
-                    double halfClusterMarkerWidth = clusterMarkerSize.width / 2.0,
+                    /*double halfClusterMarkerWidth = clusterMarkerSize.width / 2.0,
                            halfClusterMarkerHeight = clusterMarkerSize.height / 2.0;
 
                     if (averageX - halfClusterMarkerWidth < _boundingBox.origin.x)
@@ -506,7 +506,7 @@
                         averageY = _boundingBox.origin.y + halfClusterMarkerHeight;
                     if (averageY + halfClusterMarkerHeight > _boundingBox.origin.y + _boundingBox.size.height)
                         averageY = _boundingBox.origin.y + _boundingBox.size.height - halfClusterMarkerHeight;
-
+*/
                     // TODO: anchorPoint
                     clusterMarkerPosition = RMProjectedPointMake(averageX, averageY);
                 }
