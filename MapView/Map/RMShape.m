@@ -81,7 +81,7 @@
     shapeLayer.shadowRadius = 0.0;
     shapeLayer.shadowOpacity = 0.0;
     shapeLayer.shadowOffset = CGSizeMake(0, 0);
-    shapeLayer.zPosition = 10;
+    shapeLayer.zPosition = -1;
     [self addSublayer:shapeLayer];
 
     shapeBorderLayer = [CAShapeLayer new];
@@ -94,7 +94,7 @@
     shapeBorderLayer.shadowRadius = 0.0;
     shapeBorderLayer.shadowOpacity = 0.0;
     shapeBorderLayer.shadowOffset = CGSizeMake(0, 0);
-    shapeBorderLayer.zPosition = 0;
+    shapeBorderLayer.zPosition = -2;
     [self addSublayer:shapeBorderLayer];
     
     pathBoundingBox = CGRectZero;
