@@ -73,7 +73,7 @@
         if ( ! super.layer)
             super.layer = [[RMMarker alloc] initWithUIImage:testimage];
 
-        super.layer.zPosition = -MAXFLOAT + 2;
+        super.layer.zPosition = MAXFLOAT;
     }
 
     return super.layer;
