@@ -3251,7 +3251,7 @@
             
             _userHeadingTrackingView.alpha = 0.0;
             
-            [self insertSubview:_userHeadingTrackingView belowSubview:_overlayView];
+            [self insertSubview:_userHeadingTrackingView aboveSubview:_overlayView];
             
             _userLocationTrackingView = [[UIImageView alloc] initWithImage:[UIImage imageWithCGImage:(CGImageRef)self.userLocation.layer.contents
                                                                                                scale:self.userLocation.layer.contentsScale
