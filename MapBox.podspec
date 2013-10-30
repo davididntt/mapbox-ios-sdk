@@ -1,7 +1,7 @@
 Pod::Spec.new do |m|
 
   m.name    = 'MapBox'
-  m.version = '1.0.2'
+  m.version = '1.0.3'
 
   m.summary     = 'Open source alternative to MapKit.'
   m.description = 'Open source alternative to MapKit supporting custom tile sources, offline use, and complete cache control.'
@@ -21,17 +21,16 @@ Pod::Spec.new do |m|
 
   m.prefix_header_file = 'MapView/MapView_Prefix.pch'
 
-  m.post_install do |library|
-    Dir.chdir File.join(library.sandbox_dir, 'MapBox') do
-      command = "xcodebuild -project MapView/MapView.xcodeproj -target Resources CONFIGURATION_BUILD_DIR=../../Resources 2>&1 > /dev/null"
+  m.pre_install do |pod, target_definition|
+    Dir.chdir(pod.root) do
+      command = "xcodebuild -project MapView/MapView.xcodeproj -target Resources CONFIGURATION_BUILD_DIR=../Resources 2>&1 > /dev/null"
       unless system(command)
         raise ::Pod::Informative, "Failed to generate MapBox resources bundle"
       end
     end
-    File.open(library.copy_resources_script_path, 'a') do |file|
-      file.puts "install_resource 'Resources/MapBox.bundle'"
-    end
   end
+
+  m.resource = 'Resources/MapBox.bundle'
 
   m.documentation = {
     :html => 'http://mapbox.com/mapbox-ios-sdk/api/',

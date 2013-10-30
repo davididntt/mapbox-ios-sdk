@@ -661,8 +661,11 @@
 
 - (void)setAnnotation:(RMAnnotation *)newAnnotation
 {
-    super.annotation = newAnnotation;
-    [self recalculateGeometryAnimated:NO];
+    if (newAnnotation)
+    {
+        super.annotation = newAnnotation;
+        [self recalculateGeometryAnimated:NO];
+    }
 }
 
 @end
