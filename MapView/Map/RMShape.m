@@ -260,7 +260,7 @@
         clippedBounds.size.width -= offset;
     }
 
-    if (animated)
+    if (NO)
     {
         CABasicAnimation *positionAnimation = [CABasicAnimation animationWithKeyPath:@"position"];
         positionAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
