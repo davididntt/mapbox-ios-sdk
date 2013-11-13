@@ -186,24 +186,24 @@
         UIBezierPath *scaledPath = [bezierPath copy];
         [scaledPath applyTransform:scaling];
 
-        if (animated)
-        {
-            CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"path"];
-            animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
-            animation.repeatCount = 0;
-            animation.autoreverses = NO;
-            animation.fromValue = (id) shapeLayer.path;
-            animation.toValue = (id) scaledPath.CGPath;
-            
-            CABasicAnimation *animationBorder = [CABasicAnimation animationWithKeyPath:@"path"];
-            animationBorder.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
-            animationBorder.repeatCount = 0;
-            animationBorder.autoreverses = NO;
-            animationBorder.fromValue = (id) shapeBorderLayer.path;
-            animationBorder.toValue = (id) scaledPath.CGPath;
-            [shapeLayer addAnimation:animation forKey:@"animatePath"];
-            [shapeBorderLayer addAnimation:animationBorder forKey:@"animateKeyPath"];
-        }
+//        if (animated)
+//        {
+//            CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"path"];
+//            animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+//            animation.repeatCount = 0;
+//            animation.autoreverses = NO;
+//            animation.fromValue = (id) shapeLayer.path;
+//            animation.toValue = (id) scaledPath.CGPath;
+//            
+//            CABasicAnimation *animationBorder = [CABasicAnimation animationWithKeyPath:@"path"];
+//            animationBorder.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+//            animationBorder.repeatCount = 0;
+//            animationBorder.autoreverses = NO;
+//            animationBorder.fromValue = (id) shapeBorderLayer.path;
+//            animationBorder.toValue = (id) scaledPath.CGPath;
+//            [shapeLayer addAnimation:animation forKey:@"animatePath"];
+//            [shapeBorderLayer addAnimation:animationBorder forKey:@"animateKeyPath"];
+//        }
 
         shapeLayer.path = scaledPath.CGPath;
         shapeBorderLayer.path = scaledPath.CGPath;
@@ -260,16 +260,16 @@
         clippedBounds.size.width -= offset;
     }
 
-    if (NO)
-    {
-        CABasicAnimation *positionAnimation = [CABasicAnimation animationWithKeyPath:@"position"];
-        positionAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
-        positionAnimation.repeatCount = 0;
-        positionAnimation.autoreverses = NO;
-        positionAnimation.fromValue = [NSValue valueWithCGPoint:self.position];
-        positionAnimation.toValue = [NSValue valueWithCGPoint:newPosition];
-        [self addAnimation:positionAnimation forKey:@"animatePosition"];
-    }
+//    if (animated)
+//    {
+//        CABasicAnimation *positionAnimation = [CABasicAnimation animationWithKeyPath:@"position"];
+//        positionAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+//        positionAnimation.repeatCount = 0;
+//        positionAnimation.autoreverses = NO;
+//        positionAnimation.fromValue = [NSValue valueWithCGPoint:self.position];
+//        positionAnimation.toValue = [NSValue valueWithCGPoint:newPosition];
+//        [self addAnimation:positionAnimation forKey:@"animatePosition"];
+//    }
 
     super.position = newPosition;
 
