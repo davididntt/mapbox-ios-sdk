@@ -2870,7 +2870,9 @@
     }];
 
     for (CGFloat i = 0; i < [sortedAnnotations count]; i++)
-        ((RMAnnotation *)[sortedAnnotations objectAtIndex:i]).layer.zPosition = (CGFloat)i;
+        if (((RMAnnotation *)[sortedAnnotations objectAtIndex:i]).layer.zPosition == 0.0f) {
+            ((RMAnnotation *)[sortedAnnotations objectAtIndex:i]).layer.zPosition = (CGFloat)i;
+        }
 
     // bring any active callout annotation to the front
     //
