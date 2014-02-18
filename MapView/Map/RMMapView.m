@@ -385,14 +385,14 @@
     // only change if the frame changes and not during initialization
     if ( ! CGRectEqualToRect(r, frame))
     {
-        RMProjectedPoint centerPoint = self.centerProjectedPoint;
+        //RMProjectedPoint centerPoint = self.centerProjectedPoint;
 
         CGRect bounds = CGRectMake(0, 0, frame.size.width, frame.size.height);
         _backgroundView.frame = bounds;
         _mapScrollView.frame = bounds;
         _overlayView.frame = bounds;
 
-        [self setCenterProjectedPoint:centerPoint animated:NO];
+        //[self setCenterProjectedPoint:centerPoint animated:NO];
 
         [self correctPositionOfAllAnnotations];
 
