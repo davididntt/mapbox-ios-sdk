@@ -562,12 +562,16 @@
     {
         BOOL flag = wasUserEvent;
 
+        __weak RMMapView *weakSelf = self;
+        BOOL hasBeforeMapMove = _delegateHasBeforeMapMove;
+        BOOL hasAfterMapMove  = _delegateHasAfterMapMove;
+
         if ([_moveDelegateQueue operationCount] == 0)
         {
             dispatch_async(dispatch_get_main_queue(), ^(void)
             {
-                if (_delegateHasBeforeMapMove)
-                    [_delegate beforeMapMove:self byUser:flag];
+                if (hasBeforeMapMove)
+                    [_delegate beforeMapMove:weakSelf byUser:flag];
             });
         }
 
@@ -579,8 +583,8 @@
             {
                 dispatch_async(dispatch_get_main_queue(), ^(void)
                 {
-                    if (_delegateHasAfterMapMove)
-                        [_delegate afterMapMove:self byUser:flag];
+                    if (hasAfterMapMove)
+                        [_delegate afterMapMove:weakSelf byUser:flag];
                 });
             }];
         }
@@ -601,12 +605,16 @@
     {
         BOOL flag = wasUserEvent;
 
+        __weak RMMapView *weakSelf = self;
+        BOOL hasBeforeMapZoom = _delegateHasBeforeMapZoom;
+        BOOL hasAfterMapZoom  = _delegateHasAfterMapZoom;
+
         if ([_zoomDelegateQueue operationCount] == 0)
         {
             dispatch_async(dispatch_get_main_queue(), ^(void)
             {
-                if (_delegateHasBeforeMapZoom)
-                    [_delegate beforeMapZoom:self byUser:flag];
+                if (hasBeforeMapZoom)
+                    [_delegate beforeMapZoom:weakSelf byUser:flag];
             });
         }
 
@@ -618,8 +626,8 @@
             {
                 dispatch_async(dispatch_get_main_queue(), ^(void)
                 {
-                    if (_delegateHasAfterMapZoom)
-                        [_delegate afterMapZoom:self byUser:flag];
+                    if (hasAfterMapZoom)
+                        [_delegate afterMapZoom:weakSelf byUser:flag];
                 });
             }];
         }
