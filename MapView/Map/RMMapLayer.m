@@ -72,7 +72,12 @@
 
 - (void)setPosition:(CGPoint)position animated:(BOOL)animated
 {
-    [self setPosition:position];
+    @try {
+        [self setPosition:position];
+    }
+    @catch (NSException *exception) {
+        
+    }
 }
 
 /// return nil for certain animation keys to block core animation
