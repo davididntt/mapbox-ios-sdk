@@ -88,10 +88,10 @@
 
     __block RMCacheObject *cachedObject = nil;
     NSNumber *tileHash = [RMTileCache tileHash:tile];
-
+    __weak RMMemoryCache *weakSelf = self;
     dispatch_sync(_memoryCacheQueue, ^{
-
-        cachedObject = [_memoryCache objectForKey:tileHash];
+        RMMemoryCache *strongSelf = weakSelf;
+        cachedObject = [strongSelf->_memoryCache objectForKey:tileHash];
 
         if (cachedObject)
         {
@@ -101,8 +101,9 @@
             }
             else
             {
-                dispatch_barrier_async(_memoryCacheQueue, ^{
-                    [_memoryCache removeObjectForKey:tileHash];
+                dispatch_barrier_async(strongSelf->_memoryCacheQueue, ^{
+                    RMMemoryCache *strongSelfNested = weakSelf;
+                    [strongSelfNested->_memoryCache removeObjectForKey:tileHash];
                 });
 
                 cachedObject = nil;
@@ -124,16 +125,17 @@
 /// Remove the least-recently used image from cache, if cache is at or over capacity. Removes only 1 image.
 - (void)makeSpaceInCache
 {
+    __weak RMMemoryCache *weakSelf = self;
     dispatch_barrier_async(_memoryCacheQueue, ^{
-
-        while ([_memoryCache count] >= _memoryCacheCapacity)
+        RMMemoryCache *strongSelf = weakSelf;
+        while ([strongSelf->_memoryCache count] >= strongSelf->_memoryCacheCapacity)
         {
             // Rather than scanning I would really like to be using a priority queue
             // backed by a heap here.
 
             // Maybe deleting one random element would work as well.
 
-            NSEnumerator *enumerator = [_memoryCache objectEnumerator];
+            NSEnumerator *enumerator = [strongSelf->_memoryCache objectEnumerator];
             RMCacheObject *image;
 
             NSDate *oldestDate = nil;
@@ -151,7 +153,7 @@
             if (oldestImage)
             {
                 // RMLog(@"Memory cache delete tile %d %d %d (%@)", oldestImage.tile.x, oldestImage.tile.y, oldestImage.tile.zoom, [RMTileCache tileHash:oldestImage.tile]);
-                [_memoryCache removeObjectForKey:[RMTileCache tileHash:oldestImage.tile]];
+                [strongSelf->_memoryCache removeObjectForKey:[RMTileCache tileHash:oldestImage.tile]];
             }
         }
 
@@ -163,33 +165,37 @@
 //    RMLog(@"Memory cache insert tile %d %d %d (%@)", tile.x, tile.y, tile.zoom, [RMTileCache tileHash:tile]);
 
 	[self makeSpaceInCache];
-
+    __weak RMMemoryCache *weakSelf = self;
     dispatch_barrier_async(_memoryCacheQueue, ^{
-        [_memoryCache setObject:[RMCacheObject cacheObject:image forTile:tile withCacheKey:aCacheKey] forKey:[RMTileCache tileHash:tile]];
+        RMMemoryCache *strongSelf = weakSelf;
+        [strongSelf->_memoryCache setObject:[RMCacheObject cacheObject:image forTile:tile withCacheKey:aCacheKey] forKey:[RMTileCache tileHash:tile]];
     });
 }
 
 - (void)removeAllCachedImages
 {
     LogMethod();
-
+    __weak RMMemoryCache *weakSelf = self;
     dispatch_barrier_async(_memoryCacheQueue, ^{
-        [_memoryCache removeAllObjects];
+        RMMemoryCache *strongSelf = weakSelf;
+        [strongSelf->_memoryCache removeAllObjects];
     });
 }
 
 - (void)removeAllCachedImagesForCacheKey:(NSString *)cacheKey
 {
+    __weak RMMemoryCache *weakSelf = self;
     dispatch_barrier_async(_memoryCacheQueue, ^{
+        RMMemoryCache *strongSelf = weakSelf;
 
         NSMutableArray *keysToRemove = [NSMutableArray array];
 
-        [_memoryCache enumerateKeysAndObjectsUsingBlock:^(id key, RMCacheObject *cachedObject, BOOL *stop) {
+        [strongSelf->_memoryCache enumerateKeysAndObjectsUsingBlock:^(id key, RMCacheObject *cachedObject, BOOL *stop) {
             if ([[cachedObject cacheKey] isEqualToString:cacheKey])
                 [keysToRemove addObject:key];
         }];
 
-        [_memoryCache removeObjectsForKeys:keysToRemove];
+        [strongSelf->_memoryCache removeObjectsForKeys:keysToRemove];
 
     });
 }

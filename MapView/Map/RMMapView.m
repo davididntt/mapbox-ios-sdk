@@ -565,13 +565,12 @@
         __weak RMMapView *weakSelf = self;
         BOOL hasBeforeMapMove = _delegateHasBeforeMapMove;
         BOOL hasAfterMapMove  = _delegateHasAfterMapMove;
-
         if ([_moveDelegateQueue operationCount] == 0)
         {
             dispatch_async(dispatch_get_main_queue(), ^(void)
             {
                 if (hasBeforeMapMove)
-                    [_delegate beforeMapMove:weakSelf byUser:flag];
+                    [weakSelf.delegate beforeMapMove:weakSelf byUser:flag];
             });
         }
 
@@ -584,7 +583,7 @@
                 dispatch_async(dispatch_get_main_queue(), ^(void)
                 {
                     if (hasAfterMapMove)
-                        [_delegate afterMapMove:weakSelf byUser:flag];
+                        [weakSelf.delegate afterMapMove:weakSelf byUser:flag];
                 });
             }];
         }
@@ -614,7 +613,7 @@
             dispatch_async(dispatch_get_main_queue(), ^(void)
             {
                 if (hasBeforeMapZoom)
-                    [_delegate beforeMapZoom:weakSelf byUser:flag];
+                    [weakSelf.delegate beforeMapZoom:weakSelf byUser:flag];
             });
         }
 
@@ -627,7 +626,7 @@
                 dispatch_async(dispatch_get_main_queue(), ^(void)
                 {
                     if (hasAfterMapZoom)
-                        [_delegate afterMapZoom:weakSelf byUser:flag];
+                        [weakSelf.delegate afterMapZoom:weakSelf byUser:flag];
                 });
             }];
         }
@@ -2841,7 +2840,7 @@
     NSMutableArray *sortedAnnotations = [NSMutableArray arrayWithArray:[_visibleAnnotations allObjects]];
 
     [sortedAnnotations filterUsingPredicate:[NSPredicate predicateWithFormat:@"isUserLocationAnnotation = NO"]];
-
+    __weak RMMapView *weakSelf = self;
     [sortedAnnotations sortUsingComparator:^(id obj1, id obj2)
     {
         RMAnnotation *annotation1 = (RMAnnotation *)obj1;
@@ -2850,10 +2849,10 @@
         // clusters above/below non-clusters (based on _orderClusterMarkersAboveOthers)
         //
         if (   annotation1.isClusterAnnotation && ! annotation2.isClusterAnnotation)
-            return (_orderClusterMarkersAboveOthers ? NSOrderedDescending : NSOrderedAscending);
+            return (weakSelf.orderClusterMarkersAboveOthers ? NSOrderedDescending : NSOrderedAscending);
 
         if ( ! annotation1.isClusterAnnotation &&   annotation2.isClusterAnnotation)
-            return (_orderClusterMarkersAboveOthers ? NSOrderedAscending : NSOrderedDescending);
+            return (weakSelf.orderClusterMarkersAboveOthers ? NSOrderedAscending : NSOrderedDescending);
 
         // markers above shapes
         //
@@ -2865,8 +2864,9 @@
 
         // the rest in increasing y-position
         //
-        CGPoint obj1Point = [self convertPoint:annotation1.position fromView:_overlayView];
-        CGPoint obj2Point = [self convertPoint:annotation2.position fromView:_overlayView];
+        RMMapView *strongSelf = weakSelf;
+        CGPoint obj1Point = [self convertPoint:annotation1.position fromView:strongSelf->_overlayView];
+        CGPoint obj2Point = [self convertPoint:annotation2.position fromView:strongSelf->_overlayView];
 
         if (obj1Point.y > obj2Point.y)
             return NSOrderedDescending;
@@ -3075,21 +3075,22 @@
 
             [CATransaction setAnimationDuration:0.5];
             [CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
-
+            __weak RMMapView *weakSelf = self;
             [UIView animateWithDuration:(animated ? 0.5 : 0.0)
                                   delay:0.0
                                 options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationCurveEaseInOut
                              animations:^(void)
                              {
-                                 _mapTransform = CGAffineTransformIdentity;
-                                 _annotationTransform = CATransform3DIdentity;
+                                 RMMapView *strongSelf = weakSelf;
+                                 strongSelf->_mapTransform = CGAffineTransformIdentity;
+                                 strongSelf->_annotationTransform = CATransform3DIdentity;
 
-                                 _mapScrollView.transform = _mapTransform;
-                                 _overlayView.transform   = _mapTransform;
+                                 strongSelf->_mapScrollView.transform = strongSelf->_mapTransform;
+                                 strongSelf->_overlayView.transform   = strongSelf->_mapTransform;
 
-                                 for (RMAnnotation *annotation in _annotations)
+                                 for (RMAnnotation *annotation in weakSelf.annotations)
                                      if ([annotation.layer isKindOfClass:[RMMarker class]] && ! annotation.isUserLocationAnnotation)
-                                         annotation.layer.transform = _annotationTransform;
+                                         annotation.layer.transform = strongSelf->_annotationTransform;
                              }
                              completion:nil];
 
@@ -3124,7 +3125,7 @@
                 [_userHeadingTrackingView removeFromSuperview]; _userHeadingTrackingView = nil;
                 [_userHaloTrackingView removeFromSuperview]; _userHaloTrackingView = nil;
             }
-
+            __weak RMMapView *weakSelf = self;
             [CATransaction setAnimationDuration:0.5];
             [CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
 
@@ -3133,15 +3134,16 @@
                                 options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationCurveEaseInOut
                              animations:^(void)
                              {
-                                 _mapTransform = CGAffineTransformIdentity;
-                                 _annotationTransform = CATransform3DIdentity;
+                                 RMMapView *strongSelf = weakSelf;
+                                 strongSelf->_mapTransform = CGAffineTransformIdentity;
+                                 strongSelf->_annotationTransform = CATransform3DIdentity;
 
-                                 _mapScrollView.transform = _mapTransform;
-                                 _overlayView.transform   = _mapTransform;
+                                 strongSelf->_mapScrollView.transform = strongSelf->_mapTransform;
+                                 strongSelf->_overlayView.transform   = strongSelf->_mapTransform;
 
-                                 for (RMAnnotation *annotation in _annotations)
+                                 for (RMAnnotation *annotation in weakSelf.annotations)
                                      if ([annotation.layer isKindOfClass:[RMMarker class]] && ! annotation.isUserLocationAnnotation)
-                                         annotation.layer.transform = _annotationTransform;
+                                         annotation.layer.transform = strongSelf->_annotationTransform;
                              }
                              completion:nil];
 
@@ -3352,11 +3354,12 @@
         // Follow user with direction
         if (  _showsUserLocation && !_mapScrollView.isDragging && self.userLocation.location.course > 0)
         {
-        
+            __weak RMMapView *weakSelf = self;
             if (self.userLocation.location.course != 0 && self.userTrackingMode == RMUserTrackingModeFollowWithCourse)
             {
                 if (_userHeadingTrackingView.alpha < 1.0)
-                    [UIView animateWithDuration:0.5 animations:^(void) { _userHeadingTrackingView.alpha = 1.0; }];
+                    [UIView animateWithDuration:0.5 animations:^(void) { RMMapView *strongSelf = weakSelf;
+                        strongSelf->_userHeadingTrackingView.alpha = 1.0; }];
                 
                 [CATransaction begin];
                 [CATransaction setAnimationDuration:0.5];
@@ -3368,16 +3371,16 @@
                                  animations:^(void)
                  {
                      CGFloat angle = (M_PI / -180) * self.userLocation.location.course;
+                     RMMapView *strongSelf = weakSelf;
+                     strongSelf->_mapTransform = CGAffineTransformMakeRotation(angle);
+                     strongSelf->_annotationTransform = CATransform3DMakeAffineTransform(CGAffineTransformMakeRotation(-angle));
                      
-                     _mapTransform = CGAffineTransformMakeRotation(angle);
-                     _annotationTransform = CATransform3DMakeAffineTransform(CGAffineTransformMakeRotation(-angle));
+                     strongSelf->_mapScrollView.transform = strongSelf->_mapTransform;
+                     strongSelf->_overlayView.transform   = strongSelf->_mapTransform;
                      
-                     _mapScrollView.transform = _mapTransform;
-                     _overlayView.transform   = _mapTransform;
-                     
-                     for (RMAnnotation *annotation in _annotations)
+                     for (RMAnnotation *annotation in weakSelf.annotations)
                          if ([annotation.layer isKindOfClass:[RMMarker class]] && ! annotation.isUserLocationAnnotation)
-                             annotation.layer.transform = _annotationTransform;
+                             annotation.layer.transform = strongSelf->_annotationTransform;
                      
                      [self correctPositionOfAllAnnotations];
                  }
@@ -3536,8 +3539,10 @@
 
     if (newHeading.trueHeading != 0 && self.userTrackingMode == RMUserTrackingModeFollowWithHeading)
     {
+        __weak RMMapView *weakSelf = self;
         if (_userHeadingTrackingView.alpha < 1.0)
-            [UIView animateWithDuration:0.5 animations:^(void) { _userHeadingTrackingView.alpha = 1.0; }];
+            [UIView animateWithDuration:0.5 animations:^(void) { RMMapView *strongSelf = weakSelf;
+                strongSelf->_userHeadingTrackingView.alpha = 1.0; }];
 
         [CATransaction begin];
         [CATransaction setAnimationDuration:0.5];
@@ -3549,16 +3554,16 @@
                          animations:^(void)
                          {
                              CGFloat angle = (M_PI / -180) * newHeading.trueHeading;
+                             RMMapView *strongSelf = self;
+                             strongSelf->_mapTransform = CGAffineTransformMakeRotation(angle);
+                             strongSelf->_annotationTransform = CATransform3DMakeAffineTransform(CGAffineTransformMakeRotation(-angle));
 
-                             _mapTransform = CGAffineTransformMakeRotation(angle);
-                             _annotationTransform = CATransform3DMakeAffineTransform(CGAffineTransformMakeRotation(-angle));
+                             strongSelf->_mapScrollView.transform = strongSelf->_mapTransform;
+                             strongSelf->_overlayView.transform   = strongSelf->_mapTransform;
 
-                             _mapScrollView.transform = _mapTransform;
-                             _overlayView.transform   = _mapTransform;
-
-                             for (RMAnnotation *annotation in _annotations)
+                             for (RMAnnotation *annotation in weakSelf.annotations)
                                  if ([annotation.layer isKindOfClass:[RMMarker class]] && ! annotation.isUserLocationAnnotation)
-                                     annotation.layer.transform = _annotationTransform;
+                                     annotation.layer.transform = strongSelf->_annotationTransform;
 
                              [self correctPositionOfAllAnnotations];
                          }

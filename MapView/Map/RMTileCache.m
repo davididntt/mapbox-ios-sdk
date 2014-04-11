@@ -135,18 +135,22 @@
 
 - (void)addCache:(id <RMTileCache>)cache
 {
+    __weak RMTileCache *weakSelf = self;
     dispatch_barrier_async(_tileCacheQueue, ^{
-        [_tileCaches addObject:cache];
+        RMTileCache *strongSelf = weakSelf;
+        [strongSelf->_tileCaches addObject:cache];
     });
 }
 
 - (void)insertCache:(id <RMTileCache>)cache atIndex:(NSUInteger)index
 {
+    __weak RMTileCache *weakSelf = self;
     dispatch_barrier_async(_tileCacheQueue, ^{
-        if (index >= [_tileCaches count])
-            [_tileCaches addObject:cache];
+        RMTileCache *strongSelf = weakSelf;
+        if (index >= [strongSelf->_tileCaches count])
+            [strongSelf->_tileCaches addObject:cache];
         else
-            [_tileCaches insertObject:cache atIndex:index];
+            [strongSelf->_tileCaches insertObject:cache atIndex:index];
     });
 }
 
@@ -167,16 +171,16 @@
 
     if (image)
         return image;
-
+    __weak RMTileCache *weakSelf = self;
     dispatch_sync(_tileCacheQueue, ^{
-
-        for (id <RMTileCache> cache in _tileCaches)
+        RMTileCache *strongSelf = weakSelf;
+        for (id <RMTileCache> cache in strongSelf->_tileCaches)
         {
             image = [cache cachedImage:tile withCacheKey:aCacheKey];
 
             if (image != nil)
             {
-                [_memoryCache addImage:image forTile:tile withCacheKey:aCacheKey];
+                [strongSelf->_memoryCache addImage:image forTile:tile withCacheKey:aCacheKey];
                 break;
             }
         }
@@ -192,10 +196,10 @@
         return;
 
     [_memoryCache addImage:image forTile:tile withCacheKey:aCacheKey];
-
+__weak RMTileCache *weakSelf = self;
     dispatch_sync(_tileCacheQueue, ^{
-
-        for (id <RMTileCache> cache in _tileCaches)
+RMTileCache *strongSelf = weakSelf;
+        for (id <RMTileCache> cache in strongSelf->_tileCaches)
         {	
             if ([cache respondsToSelector:@selector(addImage:forTile:withCacheKey:)])
                 [cache addImage:image forTile:tile withCacheKey:aCacheKey];
@@ -209,10 +213,10 @@
 	LogMethod();
 
     [_memoryCache didReceiveMemoryWarning];
-
+__weak RMTileCache *weakSelf = self;
     dispatch_sync(_tileCacheQueue, ^{
-
-        for (id<RMTileCache> cache in _tileCaches)
+RMTileCache *strongSelf = weakSelf;
+        for (id<RMTileCache> cache in strongSelf->_tileCaches)
         {
             [cache didReceiveMemoryWarning];
         }
@@ -223,10 +227,10 @@
 - (void)removeAllCachedImages
 {
     [_memoryCache removeAllCachedImages];
-
+__weak RMTileCache *weakSelf = self;
     dispatch_sync(_tileCacheQueue, ^{
-
-        for (id<RMTileCache> cache in _tileCaches)
+RMTileCache *strongSelf = weakSelf;
+        for (id<RMTileCache> cache in strongSelf->_tileCaches)
         {
             [cache removeAllCachedImages];
         }
@@ -237,10 +241,10 @@
 - (void)removeAllCachedImagesForCacheKey:(NSString *)cacheKey
 {
     [_memoryCache removeAllCachedImagesForCacheKey:cacheKey];
-
+__weak RMTileCache *weakSelf = self;
     dispatch_sync(_tileCacheQueue, ^{
-
-        for (id<RMTileCache> cache in _tileCaches)
+RMTileCache *strongSelf = weakSelf;
+        for (id<RMTileCache> cache in strongSelf->_tileCaches)
         {
             [cache removeAllCachedImagesForCacheKey:cacheKey];
         }
@@ -308,7 +312,7 @@
                                                                                                    usingCache:self];
 
                 __block RMTileCacheDownloadOperation *internalOperation = operation;
-
+__weak RMTileCache *weakSelf = self;
                 [operation setCompletionBlock:^(void)
                 {
                     dispatch_sync(dispatch_get_main_queue(), ^(void)
@@ -316,16 +320,16 @@
                         if ( ! [internalOperation isCancelled])
                         {
                             progTile++;
-
-                            [_backgroundCacheDelegate tileCache:self didBackgroundCacheTile:RMTileMake(x, y, zoom) withIndex:progTile ofTotalTileCount:totalTiles];
+RMTileCache *strongSelf = weakSelf;
+                            [strongSelf->_backgroundCacheDelegate tileCache:self didBackgroundCacheTile:RMTileMake(x, y, zoom) withIndex:progTile ofTotalTileCount:totalTiles];
 
                             if (progTile == totalTiles)
                             {
-                                 _backgroundFetchQueue = nil;
+                                 strongSelf->_backgroundFetchQueue = nil;
 
-                                 _activeTileSource = nil;
+                                 strongSelf->_activeTileSource = nil;
 
-                                [_backgroundCacheDelegate tileCacheDidFinishBackgroundCache:self];
+                                [strongSelf->_backgroundCacheDelegate tileCacheDidFinishBackgroundCache:self];
                             }
                         }
 
@@ -341,29 +345,31 @@
 
 - (void)cancelBackgroundCache
 {
+    __weak RMTileCache *weakSelf = self;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void)
     {
         @synchronized (self)
         {
             BOOL didCancel = NO;
-
-            if (_backgroundFetchQueue)
+RMTileCache *strongSelf = weakSelf;
+            if (strongSelf->_backgroundFetchQueue)
             {
-                [_backgroundFetchQueue cancelAllOperations];
-                [_backgroundFetchQueue waitUntilAllOperationsAreFinished];
-                 _backgroundFetchQueue = nil;
+                [strongSelf->_backgroundFetchQueue cancelAllOperations];
+                [strongSelf->_backgroundFetchQueue waitUntilAllOperationsAreFinished];
+                 strongSelf->_backgroundFetchQueue = nil;
 
                 didCancel = YES;
             }
 
-            if (_activeTileSource)
-                 _activeTileSource = nil;
+            if (strongSelf->_activeTileSource)
+                 strongSelf->_activeTileSource = nil;
 
             if (didCancel)
             {
                 dispatch_sync(dispatch_get_main_queue(), ^(void)
                 {
-                    [_backgroundCacheDelegate tileCacheDidCancelBackgroundCache:self];
+                    RMTileCache *strongSelfNested = weakSelf;
+                    [strongSelfNested->_backgroundCacheDelegate tileCacheDidCancelBackgroundCache:self];
                 });
             }
         }

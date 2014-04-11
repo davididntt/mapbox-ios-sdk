@@ -172,15 +172,17 @@
                 {
                     // fire off an asynchronous retrieval
                     //
+                    __weak RMMapTiledLayerView *weakSelf = self;
                     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void)
                     {
                         // ensure only one request for a URL at a time
                         //
-                        @synchronized ([(RMAbstractWebMapSource *)_tileSource URLForTile:RMTileMake(x, y, zoom)])
+                        @synchronized ([(RMAbstractWebMapSource *)weakSelf.tileSource URLForTile:RMTileMake(x, y, zoom)])
                         {
                             // this will return quicker if cached since above attempt, else block on fetch
                             //
-                            if (_tileSource.isCacheable && [_tileSource imageForTile:RMTileMake(x, y, zoom) inCache:[_mapView tileCache]])
+                            RMMapTiledLayerView *strongSelf = self;
+                            if (weakSelf.tileSource.isCacheable && [weakSelf.tileSource imageForTile:RMTileMake(x, y, zoom) inCache:[strongSelf->_mapView tileCache]])
                             {
                                 dispatch_async(dispatch_get_main_queue(), ^(void)
                                 {

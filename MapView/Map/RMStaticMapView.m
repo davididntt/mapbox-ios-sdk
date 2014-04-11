@@ -115,13 +115,14 @@
 
     if (handler)
     {
-        _weakSelf = self;
+        __weak RMStaticMapView *weakSelf;
+        weakSelf = self;
 
         dispatch_async(tileSource.dataQueue, ^(void)
         {
             dispatch_sync(dispatch_get_main_queue(), ^(void)
             {
-                UIImage *image = [_weakSelf takeSnapshot];
+                UIImage *image = [weakSelf takeSnapshot];
 
                 handler(image);
             });
