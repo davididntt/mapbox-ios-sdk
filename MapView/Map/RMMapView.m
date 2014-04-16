@@ -112,7 +112,7 @@
 
 @implementation RMMapView
 {
-    id <RMMapViewDelegate> _delegate;
+    __weak id <RMMapViewDelegate> _delegate;
 
     BOOL _delegateHasBeforeMapMove;
     BOOL _delegateHasAfterMapMove;
