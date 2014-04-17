@@ -3018,8 +3018,16 @@
 
         [self setUserTrackingMode:RMUserTrackingModeNone animated:YES];
 
-        for (RMAnnotation *annotation in [NSArray arrayWithObjects:_trackingHaloAnnotation, _accuracyCircleAnnotation, self.userLocation, nil])
-            [self removeAnnotation:annotation];
+        if (_trackingHaloAnnotation) {
+            [self removeAnnotation:_trackingHaloAnnotation];
+        }
+        if (_accuracyCircleAnnotation) {
+            [self removeAnnotation:_accuracyCircleAnnotation];
+        }
+        if (self.userLocation) {
+            [self removeAnnotation:self.userLocation];
+        }
+
 
          _trackingHaloAnnotation = nil;
          _accuracyCircleAnnotation = nil;
