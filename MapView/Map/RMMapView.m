@@ -426,7 +426,13 @@
     [_moveDelegateQueue cancelAllOperations];
     [_zoomDelegateQueue cancelAllOperations];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [_mapScrollView removeObserver:self forKeyPath:@"contentOffset"];
+    @try {
+        [_mapScrollView removeObserver:self forKeyPath:@"contentOffset"];
+    }
+    @catch (NSException *exception) {
+        
+    }
+    
     [_tileSourcesContainer cancelAllDownloads];
     _locationManager.delegate = nil;
     [_locationManager stopUpdatingLocation];
@@ -1143,8 +1149,12 @@
     }
 
     [_tiledLayersSuperview removeFromSuperview];  _tiledLayersSuperview = nil;
-
-    [_mapScrollView removeObserver:self forKeyPath:@"contentOffset"];
+    @try {
+        [_mapScrollView removeObserver:self forKeyPath:@"contentOffset"];
+    }
+    @catch (NSException *exception) {
+        
+    }    
     [_mapScrollView removeFromSuperview];  _mapScrollView = nil;
 
     _mapScrollViewIsZooming = NO;
